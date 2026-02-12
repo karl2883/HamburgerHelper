@@ -21,6 +21,8 @@ public class ChangeWindowIconTrigger : Trigger
     {
         base.OnEnter(player);
 
+        if (HamburgerHelperModule.Settings.DisableWindowIconChanges) return;
+        
         if (Scene is not Level level) return;
         if (UseFlag && !level.Session.GetFlag(FlagName)) return;
         

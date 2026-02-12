@@ -23,6 +23,8 @@ public partial class ChangeWindowTitleTrigger : Trigger
     {
         base.OnEnter(player);
 
+        if (HamburgerHelperModule.Settings.DisableWindowTitleChanges) return;
+        
         if (Scene is not Level level) return;
         if (UseFlag && !level.Session.GetFlag(FlagName)) return;
 
@@ -47,7 +49,7 @@ public partial class ChangeWindowTitleTrigger : Trigger
             return "";
         });
         
-        Engine.Instance.Window.Title = WindowTitle;
+        WindowUtils.SetWindowTitle(WindowTitle);
     }
     
     [GeneratedRegex("{([^}]*)}")]
