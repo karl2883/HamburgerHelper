@@ -61,27 +61,29 @@ local soundIndexes = {
     {"Moon", 44},
 }
 
-controller.fieldInformation = {
-    tileType = {
-        options = fakeTilesHelper.getTilesOptions("tilesFg"),
-        editable = false,
-    },
-    wallSoundIndex = {
-        fieldType = "integer",
-        options = soundIndexes,
-        editable = false,
-    },
-    stepSoundIndex = {
-        fieldType = "integer",
-        options = soundIndexes,
-        editable = false,
-    },
-    landSoundIndex = {
-        fieldType = "integer",
-        options = soundIndexes,
-        editable = false,
+function controller.fieldInformation()
+    return {
+        tileType = {
+            options = fakeTilesHelper.getTilesOptions("tilesFg"),
+            editable = false,
+        },
+        wallSoundIndex = {
+            fieldType = "integer",
+            options = soundIndexes,
+            editable = false,
+        },
+        stepSoundIndex = {
+            fieldType = "integer",
+            options = soundIndexes,
+            editable = false,
+        },
+        landSoundIndex = {
+            fieldType = "integer",
+            options = soundIndexes,
+            editable = false,
+        }
     }
-}
+end
 
 controller.fieldOrder = {
     "x", "y",
