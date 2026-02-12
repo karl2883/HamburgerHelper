@@ -7,10 +7,10 @@
         <LangVersion>latest</LangVersion>
         <CelestePrefix Condition="'$(CelestePrefix)' == '' And Exists('..\..\..\Celeste.dll')">..\..\..</CelestePrefix>
         <CelestePrefix Condition="'$(CelestePrefix)' == ''">lib-stripped</CelestePrefix>
-        <ZippedFiles>..\everest.yaml;..\bin\**\*.*;..\Audio\**\*.*;..\Dialog\**\*.*;..\Graphics\**\*.*;..\Ahorn\**\*.*;..\Effects\HamburgerHelper\**\*.*;..\Loenn\**\*.*;</ZippedFiles>
+        <ZippedFiles>..\everest.yaml;..\bin\**\*.*;..\Audio\**\*.*;..\Dialog\**\*.*;..\Graphics\**\*.*;..\Ahorn\**\*.*;..\Loenn\**\*.*;..\Effects\HamburgerHelper\**\*.*;</ZippedFiles>
     </PropertyGroup>
     
-    <!--Disable "Copy Local" for all references-->
+    <!-- Disable "Copy Local" for all references -->
     <ItemDefinitionGroup>
         <PackageReference PrivateAssets="all" ExcludeAssets="runtime" />
         <Reference Private="false" />
@@ -29,18 +29,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <!--
-        Add any dependency references here.
-        Mod assemblies must be stripped and kept in lib-stripped, so that the GitHub runner will be able build the mod.
-
-        If you have PowerShell installed (which is cross-platform), I made a script that should do everything for you:
-        - put the mod assembly (.dll) in lib-stripped
-        - open PowerShell in your IDE (or in the repository root, so SantasGifts25)
-        - run "./StripAssembly.ps1 DependencyAssembly.dll"
-
-        If you don't have it/don't want to install it, open StripAssembly.ps1 in a text editor for manual instructions.
-        -->
-        
+        <!-- Add any dependency references here. -->
         <Reference Include="CollabUtils2.CollabUtils2" Private="false" />
     </ItemGroup>
     
@@ -63,11 +52,19 @@
         <Exec Command="@(EffectFiles->'echo ----- Compiling effect: %(RecursiveDir)%(FileName)%(Extension) ----- &amp;&amp; &quot;$(FxcCompilerPath)&quot; &quot;%(RecursiveDir)%(FileName)%(Extension)&quot; /T fx_2_0 /nologo /Fo &quot;../Effects/HamburgerHelper/%(FileName).cso&quot; &#xA;&#xD;')" IgnoreExitCode="true" />
     </Target>
     
-    <Target Name="PackageMod" AfterTargets="CopyFiles" Inputs="$(ZippedFiles)" Outputs="..\HamburgerHelper.zip" Condition="'$(Configuration)' == 'Release'">
+    <Target Name="PackageMod" AfterTargets="CopyFiles" Condition="'$(Configuration)' == 'Release'">
         <ItemGroup>
             <FilesToPackage Include="$(ZippedFiles)" />
+            <FilesToPackage Remove="@(FilesToPackage)" Condition="$([System.IO.Path]::GetFileName('%(FilesToPackage.Identity)').StartsWith('private-'))" />
         </ItemGroup>
         <PackageMod Files="@(FilesToPackage)" OutputPath="..\HamburgerHelper.zip" />
+    </Target>
+    
+    <Target Name="PrivatePackageMod" AfterTargets="CopyFiles" Condition="'$(Configuration)' == 'Release'">
+        <ItemGroup>
+            <PrivateFilesToPackage Include="$(ZippedFiles)" />
+        </ItemGroup>
+        <PrivatePackageMod Files="@(PrivateFilesToPackage)" OutputPath="..\private-HamburgerHelper.zip" />
     </Target>
     
     <PropertyGroup>
@@ -101,6 +98,71 @@
                         string entryName = GetRelativePath(projectDir, filePath);
                         
                         zip.CreateEntryFromFile(filePath, entryName);
+                    }
+                }
+    
+                string GetRelativePath(string fromPath, string toPath)
+                {
+                    if (string.IsNullOrEmpty(fromPath)) throw new ArgumentNullException(nameof(fromPath));
+                    if (string.IsNullOrEmpty(toPath))   throw new ArgumentNullException(nameof(toPath));
+                
+                    Uri fromUri = new Uri(fromPath);
+                    Uri toUri = new Uri(toPath);
+                
+                    if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
+                
+                    Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+                    string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+                
+                    if (toUri.Scheme.Equals("file", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        relativePath = relativePath.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    }
+                
+                    return relativePath;
+                }
+            ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <UsingTask TaskName="PrivatePackageMod"
+               TaskFactory="RoslynCodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+        <ParameterGroup>
+            <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <OutputPath ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System.IO" />
+            <Using Namespace="System.IO.Compression" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+                var projectDir = Path.Combine(@"$(ProjectDir)", ".."); // Go one level up, since we're inside the 'Source' directory
+                projectDir = Uri.UnescapeDataString(projectDir);
+            
+                if (File.Exists(OutputPath))
+                    File.Delete(OutputPath);
+
+                using (ZipArchive zip = ZipFile.Open(OutputPath, ZipArchiveMode.Create))
+                {
+                    foreach (var file in Files)
+                    {
+                        string filePath = file.GetMetadata("FullPath");
+                        string entryName = GetRelativePath(projectDir, filePath);
+                        
+                        // hi here is my terrible code to remove private- from the private files for the private loenn plugin builds
+                        string directory = Path.GetDirectoryName(entryName);
+                        string fileName = Path.GetFileName(entryName);
+                        
+                        if (fileName.StartsWith("private-", StringComparison.OrdinalIgnoreCase))
+                        {
+                            fileName = fileName.Substring("private-".Length);
+                        }
+                        
+                        string privateFileName = string.IsNullOrEmpty(directory) ? fileName : directory.Replace("\\", "/") + "/" + fileName;
+                        
+                        zip.CreateEntryFromFile(filePath, privateFileName);
                     }
                 }
     
