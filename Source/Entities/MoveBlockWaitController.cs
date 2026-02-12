@@ -10,7 +10,7 @@ namespace Celeste.Mod.HamburgerHelper.Entities;
 
 public class MoveBlockWaitController : Entity
 {
-    private static ILHook il_MoveBlock_Controller;
+    private static ILHook ilMoveBlockController;
     
     private readonly float Delay;
     
@@ -25,7 +25,7 @@ public class MoveBlockWaitController : Entity
     
     internal static void Load()
     {
-        il_MoveBlock_Controller = new ILHook(
+        ilMoveBlockController = new ILHook(
             typeof(MoveBlock).GetMethod("Controller", 
                 BindingFlags.NonPublic | BindingFlags.Instance)!.GetStateMachineTarget()!,
             ModController);
@@ -33,8 +33,8 @@ public class MoveBlockWaitController : Entity
     
     internal static void Unload()
     {
-        il_MoveBlock_Controller.Dispose();
-        il_MoveBlock_Controller = null;
+        ilMoveBlockController.Dispose();
+        ilMoveBlockController = null;
     }
     
     private static void ModController(ILContext il)
