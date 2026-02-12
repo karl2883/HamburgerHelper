@@ -43,6 +43,7 @@ public class HamburgerHelperModule : EverestModule
         States.St.Load();
         
         StickyWalls.Load();
+        TilesetSoundSplitter.Load();
         MoveBlockWaitController.Load();
         DreamerRefill.Load();
         
@@ -60,6 +61,7 @@ public class HamburgerHelperModule : EverestModule
         States.St.Unload();
         
         StickyWalls.Unload();
+        TilesetSoundSplitter.Unload();
         MoveBlockWaitController.Unload();
         DreamerRefill.Unload();
         

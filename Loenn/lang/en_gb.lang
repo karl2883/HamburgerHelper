@@ -9,6 +9,16 @@ entities.HamburgerHelper/MoveBlockWaitController.placements.description.move_blo
 
 entities.HamburgerHelper/MoveBlockWaitController.attributes.description.delay=Delay to wait before move block moves
 
+# -- Tileset Sound Splitter
+
+entities.HamburgerHelper/TilesetSoundSplitter.placements.name.tileset_sound_splitter=Tileset Sound Splitter
+entities.HamburgerHelper/TilesetSoundSplitter.placements.description.tileset_sound_splitter=Allows grab, step, and land sounds for a set tileset to be unique sounds.
+
+entities.HamburgerHelper/TilesetSoundSplitter.attributes.description.tileType=Tiletype for the tileset to be affected.
+entities.HamburgerHelper/TilesetSoundSplitter.attributes.description.wallSoundIndex=The sound index to be used when the player grabs on the set tiletype.
+entities.HamburgerHelper/TilesetSoundSplitter.attributes.description.stepSoundIndex=The sound index to be used when the player steps on the set tiletype.
+entities.HamburgerHelper/TilesetSoundSplitter.attributes.description.landSoundIndex=The sound index to be used when the player lands on the set tiletype.
+
 # -- Dreamer Refill
 
 entities.HamburgerHelper/DreamerRefill.placements.name.dreamer_refill=Dreamer Refill
