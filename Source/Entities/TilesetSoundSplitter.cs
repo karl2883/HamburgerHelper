@@ -1,7 +1,6 @@
 namespace Celeste.Mod.HamburgerHelper.Entities;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-[Tracked]
 [CustomEntity("HamburgerHelper/TilesetSoundSplitter")]
 public class TilesetSoundSplitter : Entity
 {
@@ -98,7 +97,7 @@ public class TilesetSoundSplitter : Entity
     {
         if (self.Scene is not Level level ) return orig(self, player, side);
         
-        List<Entity> entities = level.Tracker.GetEntities<TilesetSoundSplitter>();
+        List<Entity> entities = level.Tracker.GetEntitiesTrackIfNeeded<TilesetSoundSplitter>();
         foreach (Entity ent in entities)
         {
             if (ent is not TilesetSoundSplitter splitter)
@@ -117,7 +116,7 @@ public class TilesetSoundSplitter : Entity
     {
         if (self.Scene is not Level level ) return orig(self, entity);
         
-        List<Entity> entities = level.Tracker.GetEntities<TilesetSoundSplitter>();
+        List<Entity> entities = level.Tracker.GetEntitiesTrackIfNeeded<TilesetSoundSplitter>();
         foreach (Entity ent in entities)
         {
             if (ent is not TilesetSoundSplitter splitter)
@@ -136,7 +135,7 @@ public class TilesetSoundSplitter : Entity
     {
         if (self.Scene is not Level level ) return orig(self, entity);
         
-        List<Entity> entities = level.Tracker.GetEntities<TilesetSoundSplitter>();
+        List<Entity> entities = level.Tracker.GetEntitiesTrackIfNeeded<TilesetSoundSplitter>();
         foreach (Entity ent in entities)
         {
             if (ent is not TilesetSoundSplitter splitter)
