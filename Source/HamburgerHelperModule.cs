@@ -1,5 +1,11 @@
-﻿using Celeste.Mod.HamburgerHelper.Entities;
+﻿using System.Collections;
+using Celeste.Mod.HamburgerHelper.Entities;
 using Celeste.Mod.HamburgerHelper.Misc;
+using Celeste.Mod.Helpers;
+using Celeste.Pico8;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
+using MonoMod.Utils;
 
 namespace Celeste.Mod.HamburgerHelper;
 
@@ -34,6 +40,9 @@ public class HamburgerHelperModule : EverestModule
     {
         LoadOptioanlDependencies();
         
+        States.St.Load();
+        
+        StickyWalls.Load();
         MoveBlockWaitController.Load();
         DreamerRefill.Load();
         
@@ -48,6 +57,9 @@ public class HamburgerHelperModule : EverestModule
 
     public override void Unload() 
     {
+        States.St.Unload();
+        
+        StickyWalls.Unload();
         MoveBlockWaitController.Unload();
         DreamerRefill.Unload();
         
@@ -74,8 +86,7 @@ public class HamburgerHelperModule : EverestModule
         List<EverestModuleMetadata> optionalDependencies = new List<EverestModuleMetadata>();
         LoadedOptionalDependencies.Clear();
         
-        EverestModuleMetadata collabUtils2 = new EverestModuleMetadata()
-        {
+        EverestModuleMetadata collabUtils2 = new EverestModuleMetadata() {
             Name = "CollabUtils2",
             Version = new Version(1, 12, 2),
         };

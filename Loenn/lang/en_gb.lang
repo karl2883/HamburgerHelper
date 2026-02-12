@@ -17,6 +17,29 @@ entities.HamburgerHelper/DreamerRefill.placements.description.dreamer_refill=Set
 entities.HamburgerHelper/DreamerRefill.attributes.description.respawnTime=Time between respawns for the refill
 entities.HamburgerHelper/DreamerRefill.attributes.description.oneUse=Whether or not the refill should be one use
 
+# -- Cursor Pickup
+
+entities.HamburgerHelper/CursorPickup.placements.name.cursor_pickup=Cursor Window
+entities.HamburgerHelper/CursorPickup.placements.description.cursor_pickup=A window that turns the player into a cursor for a set time.
+
+entities.HamburgerHelper/CursorPickup.attributes.description.respawnTime=Time after collection before a new cursor enters the window.\nIf less than 0, it will not respawn.
+
+entities.HamburgerHelper/CursorPickup.attributes.description.cursorTime=How long the player is in the cursor state for after collection.\nIf less than 0, the player will not exit until dashed.
+entities.HamburgerHelper/CursorPickup.attributes.description.cursorSpeed=How many pixels the player should be moved by the cursor each frame.   
+
+entities.HamburgerHelper/CursorPickup.attributes.description.windowTexture=Texture for the background window sprite to use.\nIf making a custom window, make sure that the inner window area matches the original's size and position\nThe top left of the inner window area is at (4, 14), and is 39x29 in size.
+
+# -- Sticky Walls
+
+entities.HamburgerHelper/StickyWalls.placements.name.sticky_left=Sticky Wall (Left)
+entities.HamburgerHelper/StickyWalls.placements.description.sticky_left=A wall that when you touch, the player faces its direction and grabs onto any connected wall. (Not attached)
+
+entities.HamburgerHelper/StickyWalls.placements.name.sticky_right=Sticky Wall (Right)
+entities.HamburgerHelper/StickyWalls.placements.description.sticky_right=A wall that when you touch, the player faces its direction and grabs onto any connected wall. (Not attached)
+
+entities.HamburgerHelper/StickyWalls.attributes.description.left=If checked, the wall will force the player to grab left. If unchecked, the wall will force the player to grab right.
+entities.HamburgerHelper/StickyWalls.attributes.description.color=The color to use for the wall.
+
 # ----- Triggers -----
 
 # --- Change Window Title Trigger
