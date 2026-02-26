@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Celeste.Mod.HamburgerHelper.Entities;
+using Celeste.Mod.HamburgerHelper.Entities.Vsrg;
 using Celeste.Mod.HamburgerHelper.Misc;
 using Celeste.Mod.Helpers;
 using Celeste.Pico8;
@@ -47,6 +48,8 @@ public class HamburgerHelperModule : EverestModule
         MoveBlockWaitController.Load();
         DreamerRefill.Load();
         
+        VsrgManager.Load();
+        
         ChapterPanelCustomization.Load();
         OverworldCustomization.Load();
         
@@ -64,6 +67,8 @@ public class HamburgerHelperModule : EverestModule
         TilesetSoundSplitter.Unload();
         MoveBlockWaitController.Unload();
         DreamerRefill.Unload();
+        
+        VsrgManager.Unload();
         
         ChapterPanelCustomization.Unload();
         OverworldCustomization.Unload();

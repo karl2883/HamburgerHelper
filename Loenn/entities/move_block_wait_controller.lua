@@ -12,6 +12,6 @@ controller.placements = {
     }
 }
 
-controller.texture = "loenn/hamburger/MoveBlockWaitController"
+controller.texture = "loenn/hamburger/moveBlockWaitController"
 
 return controller

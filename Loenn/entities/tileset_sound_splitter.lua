@@ -91,6 +91,6 @@ controller.fieldOrder = {
     "wallSoundIndex", "stepSoundIndex", "landSoundIndex"
 }
 
-controller.texture = "loenn/hamburger/TilesetSoundSplitter"
+controller.texture = "loenn/hamburger/tilesetSoundSplitter"
 
 return controller

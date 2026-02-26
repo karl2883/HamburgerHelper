@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework.Input;
+
 namespace Celeste.Mod.HamburgerHelper;
 
 public class HamburgerHelperModuleSettings : EverestModuleSettings
@@ -25,5 +27,16 @@ public class HamburgerHelperModuleSettings : EverestModuleSettings
             WindowUtils.UpdateWindowIconSetting(value);
         }
     }
+
+    [DefaultButtonBinding(Buttons.A, Keys.Z)]
+    public ButtonBinding VsrgColumn1 { get; set; }
     
+    [DefaultButtonBinding(Buttons.B, Keys.X)]
+    public ButtonBinding VsrgColumn2 { get; set; }
+    
+    [DefaultButtonBinding(Buttons.X, Keys.OemPeriod)]
+    public ButtonBinding VsrgColumn3 { get; set; }
+    
+    [DefaultButtonBinding(Buttons.Y, Keys.OemQuestion)]
+    public ButtonBinding VsrgColumn4 { get; set; }
 }

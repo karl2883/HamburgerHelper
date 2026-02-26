@@ -5,8 +5,8 @@ namespace Celeste.Mod.HamburgerHelper.Utils;
 
 public static class WindowUtils
 {
-    public static MTexture LastWindowIcon;
-    public static string LastWindowTitle;
+    private static MTexture LastWindowIcon;
+    private static string LastWindowTitle = "Celeste";
     
     // i originally made this for ssc4, but i think it's quite useful and i'm happy with it, so why not
     /// <summary>
