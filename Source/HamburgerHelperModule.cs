@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using Celeste.Mod.HamburgerHelper.Entities;
 using Celeste.Mod.HamburgerHelper.Entities.Vsrg;
+using Celeste.Mod.HamburgerHelper.Exports;
 using Celeste.Mod.HamburgerHelper.Misc;
 using Celeste.Mod.Helpers;
 using Celeste.Pico8;
 using MonoMod.Cil;
+using MonoMod.ModInterop;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 
@@ -57,6 +59,8 @@ public class HamburgerHelperModule : EverestModule
         
         HamburgerHelperMetadata.Load();
         HamburgerHelperGFX.Load();
+        
+        typeof(WindowUtilsExports).ModInterop();
     }
 
     public override void Unload() 
