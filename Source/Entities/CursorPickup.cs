@@ -123,7 +123,10 @@ public class CursorPickup : Entity
     
     private void OnPlayer(Player player)
     {
-        if (player.StateMachine.State == St.Cursor) return;
+        if (player.StateMachine.State == St.Cursor)
+        {
+            player.Play("event:/HamburgerHelper/sfx/mouse_down");
+        }
         
         player.StateMachine.State = St.Cursor;
         

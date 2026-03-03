@@ -20,6 +20,8 @@ public static class Cursor
         player.Sprite.Play(PlayerSprite.FallSlow);
         player.Sprite.Scale = Vector2.One;
         
+        CursorStateTime -= Engine.DeltaTime;
+        
         float moveAmount = CursorStateSpeed;
         
         switch (Input.Aim.Value.X)
@@ -47,12 +49,10 @@ public static class Cursor
     
     public static IEnumerator CursorRoutine(Player player)
     {
-        if (CursorStateTime < 0f)
+        while (CursorStateTime > 0f)
         {
-            yield break;
+            yield return null;
         }
-        
-        yield return CursorStateTime;
         
         player.StateMachine.State = Player.StNormal;
     }
