@@ -120,7 +120,17 @@ public class CursorPickup : Entity
         
         Scene.Add(WindowRenderer);
     }
-    
+
+    public override void Update()
+    {
+        base.Update();
+
+        if (WindowRenderer == null) return;
+        
+        Vector2 windowQuadrant = new Vector2(24f, 24f);
+        WindowRenderer.Position = Position - windowQuadrant;
+    }
+
     private void OnPlayer(Player player)
     {
         if (player.StateMachine.State == St.Cursor)
