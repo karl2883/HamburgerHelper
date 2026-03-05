@@ -123,6 +123,15 @@ public class HamburgerHelperMetadata
         public float CheckpointOptionBgAlpha { get; set; } = 1f;
     }
 
+    public class CustomIconData
+    {
+        // ReSharper disable once MemberCanBePrivate.Global
+        public float[] Offset { get; set; } = [0, 0];
+        public Vector2 PositionOffset => new Vector2(Offset[0], Offset[1]);
+        
+        public EffectDataLayer IconEffect { get; set; }
+    }
+
     public class OverworldCustomizationSettingsData
     {
         public class CustomHiresSnow
@@ -144,6 +153,7 @@ public class HamburgerHelperMetadata
     {
         public CustomColorData CustomColors { get; set; }
         public List<OverlayData> Overlays { get; set; }
+        public CustomIconData CustomIcon { get; set; }
         public string CustomPolaroidPath { get; set; } = "polaroid";
         
         public EffectDataLayer TitleTextEffect { get; set; }

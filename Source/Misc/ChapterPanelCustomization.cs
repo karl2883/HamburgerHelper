@@ -23,6 +23,7 @@ public static class ChapterPanelCustomization
 {
     private static ILHook ilHook_OuiChapterPanel_SwapRoutine;
     private static ILHook ilHook_OuiChapterPanel_orig_DrawCheckpoint;
+    private static ILHook ilHook_OuiChapterSelectIcon_orig_Update;
     
     internal static void Load()
     {
@@ -30,6 +31,9 @@ public static class ChapterPanelCustomization
         IL.Celeste.OuiChapterPanel.Option.Render += OptionOnRender;
         IL.Celeste.OuiChapterPanel.Reset += OuiChapterPanel_Reset;
 
+        IL.Celeste.OuiChapterSelectIcon.SetSelectedPercent += OuiChapterSelectIconOnSetSelectedPercent;
+        IL.Celeste.OuiChapterSelectIcon.Render += OuiChapterSelectIconOnRender;
+        
         ilHook_OuiChapterPanel_orig_DrawCheckpoint =
             new ILHook(typeof(OuiChapterPanel).GetMethod("orig_DrawCheckpoint", BindingFlags.NonPublic | BindingFlags.Instance)!,
             OuiChapterPanel_orig_DrawCheckpoint);
@@ -37,6 +41,10 @@ public static class ChapterPanelCustomization
         ilHook_OuiChapterPanel_SwapRoutine =
             new ILHook(typeof(OuiChapterPanel).GetMethod("SwapRoutine", BindingFlags.NonPublic | BindingFlags.Instance)!.GetStateMachineTarget()!,
                 OuiChapterPanel_SwapRoutine);
+
+        ilHook_OuiChapterSelectIcon_orig_Update =
+            new ILHook(typeof(OuiChapterSelectIcon).GetMethod("orig_Update")!,
+                OuiChapterSelectIcon_orig_Update);
         
         On.Celeste.MenuOptions.SetWindow += OnWindowSizeChange;
     }
@@ -47,17 +55,23 @@ public static class ChapterPanelCustomization
         IL.Celeste.OuiChapterPanel.Option.Render -= OptionOnRender;
         IL.Celeste.OuiChapterPanel.Reset -= OuiChapterPanel_Reset;
         
-        ilHook_OuiChapterPanel_SwapRoutine.Dispose();
+        IL.Celeste.OuiChapterSelectIcon.SetSelectedPercent -= OuiChapterSelectIconOnSetSelectedPercent;
+        IL.Celeste.OuiChapterSelectIcon.Render -= OuiChapterSelectIconOnRender;
+        
+        ilHook_OuiChapterPanel_SwapRoutine?.Dispose();
         ilHook_OuiChapterPanel_SwapRoutine = null;
         
-        ilHook_OuiChapterPanel_orig_DrawCheckpoint.Dispose();
+        ilHook_OuiChapterPanel_orig_DrawCheckpoint?.Dispose();
         ilHook_OuiChapterPanel_orig_DrawCheckpoint = null;
+        
+        ilHook_OuiChapterSelectIcon_orig_Update?.Dispose();
+        ilHook_OuiChapterSelectIcon_orig_Update = null;
         
         On.Celeste.MenuOptions.SetWindow -= OnWindowSizeChange;
 
         if (TextMaskTarget != null)
         {
-            TextMaskTarget.Dispose();
+            TextMaskTarget?.Dispose();
             TextMaskTarget = null;
         }
     }
@@ -69,6 +83,55 @@ public static class ChapterPanelCustomization
         return variable;
     }
     
+    private static void OuiChapterSelectIconOnSetSelectedPercent(ILContext il)
+    {
+        ILCursor cursor = new ILCursor(il);
+        
+        /*
+         * IL_0017: ldloc.0
+         * IL_0018: callvirt instance valuetype [FNA]Microsoft.Xna.Framework.Vector2 Celeste.OuiChapterPanel::get_IconOffset()
+         * IL_001d: call valuetype [FNA]Microsoft.Xna.Framework.Vector2 [FNA]Microsoft.Xna.Framework.Vector2::op_Addition(valuetype [FNA]Microsoft.Xna.Framework.Vector2, valuetype [FNA]Microsoft.Xna.Framework.Vector2)
+         * IL_0022: stloc.1
+         */
+        if (!cursor.TryGotoNextBestFit(MoveType.After,
+            i => i.MatchLdloc0(),
+            i => i.MatchCallvirt<OuiChapterPanel>("get_IconOffset"),
+            i => i.MatchCall<Vector2>("op_Addition"),
+            i => i.MatchStloc1()))
+            throw new HookException(il, "OuiChapterSelectIcon.SetSelectedPercent failed to match IconOffset");
+        
+        cursor.Index--;
+        
+        cursor.EmitDelegate(ModifyIconOffset);
+    }
+    
+    private static void OuiChapterSelectIcon_orig_Update(ILContext il)
+    {
+        ILCursor cursor = new ILCursor(il);
+        
+        /*
+         * IL_00aa: ldloc.0
+         * IL_00ab: callvirt instance valuetype [FNA]Microsoft.Xna.Framework.Vector2 Celeste.OuiChapterPanel::get_IconOffset()
+         * IL_00b0: call valuetype [FNA]Microsoft.Xna.Framework.Vector2 [FNA]Microsoft.Xna.Framework.Vector2::op_Addition(valuetype [FNA]Microsoft.Xna.Framework.Vector2, valuetype [FNA]Microsoft.Xna.Framework.Vector2)
+         * IL_00b5: stfld valuetype [FNA]Microsoft.Xna.Framework.Vector2 Monocle.Entity::Position
+         */
+        if (!cursor.TryGotoNextBestFit(MoveType.After,
+            i => i.MatchLdloc0(),
+            i => i.MatchCallvirt<OuiChapterPanel>("get_IconOffset"),
+            i => i.MatchCall<Vector2>("op_Addition"),
+            i => i.MatchStfld<Entity>("Position")))
+        {
+            Logger.Log(LogLevel.Info, "DEBUG", "failed");
+            return;
+        }
+        
+            // throw new HookException(il, "OuiChapterSelectIcon.SetSelectedPercent failed to match IconOffset");
+        
+        cursor.Index--;
+        
+        cursor.EmitDelegate(ModifyIconOffset);
+    }
+    
     private static void OuiChapterPanel_orig_DrawCheckpoint(ILContext il)
     {
         ILCursor cursor = new ILCursor(il);
@@ -77,24 +140,13 @@ public static class ChapterPanelCustomization
          * IL_0013: ldsfld class Monocle.Atlas Celeste.MTN::Checkpoints
          * IL_0018: ldstr "polaroid"
          */
+        
         if (!cursor.TryGotoNext(MoveType.After,
             i => i.MatchLdsfld(typeof(MTN), "Checkpoints"),
             i => i.MatchLdstr("polaroid")))
             throw new HookException(il, "OuiChapterPanel.orig_DrawCheckpoint failed at find polaroid");
         
         cursor.EmitDelegate(ModifyPolaroidPath);
-    }
-    
-    private static string ModifyPolaroidPath(string orig)
-    {
-        if (SaveData.Instance == null) return orig;
-        AreaData data = AreaData.Get(SaveData.Instance.LastArea_Safe);
-        
-        if (!HamburgerHelperMetadata.TryGetMetadata(data, out HamburgerHelperMetadata metadata)) 
-            return orig;
-        
-        HamburgerHelperMetadata.ChapterPanelCustomizationSettingsData meta = metadata?.ChapterPanelCustomization;
-        return meta == null ? orig : meta.CustomPolaroidPath;
     }
     
     private static void OptionOnRender(ILContext il)
@@ -345,6 +397,94 @@ public static class ChapterPanelCustomization
         cursor.EmitLdloc1();
         cursor.EmitDelegate(ModifyCheckpointOptionBgColor);
     }
+
+    #region Misc Edits
+    
+    private static Vector2 ModifyIconOffset(Vector2 orig)
+    {
+        if (SaveData.Instance == null) return orig;
+        AreaData data = AreaData.Get(SaveData.Instance.LastArea_Safe);
+        
+        if (!HamburgerHelperMetadata.TryGetMetadata(data, out HamburgerHelperMetadata metadata)) 
+            return orig;
+        
+        HamburgerHelperMetadata.ChapterPanelCustomizationSettingsData meta = metadata?.ChapterPanelCustomization;
+        if (meta?.CustomIcon == null) return orig;
+
+        return orig + meta.CustomIcon.PositionOffset;
+    }
+    
+    private static void OuiChapterSelectIconOnRender(ILContext il)
+    {
+        ILCursor cursor = new ILCursor(il);
+        
+        /*
+         * IL_00b5: ldarg.0
+         * IL_00b6: ldfld float32 Celeste.OuiChapterSelectIcon::Rotation
+         * IL_00bb: callvirt instance void Monocle.MTexture::DrawCentered(valuetype [FNA]Microsoft.Xna.Framework.Vector2, valuetype [FNA]Microsoft.Xna.Framework.Color, valuetype [FNA]Microsoft.Xna.Framework.Vector2, float32)
+         */
+        if (!cursor.TryGotoNext(MoveType.After,
+            i => i.MatchLdarg0(),
+            i => i.MatchLdfld<OuiChapterSelectIcon>("Rotation"),
+            i => i.MatchCallvirt<MTexture>("DrawCentered")))
+            throw new HookException(il, "OuiChapterSelectIcon.Render failed to match DrawCentered");
+
+        cursor.Index--;
+
+        cursor.EmitLdarg0();
+        cursor.EmitDelegate(IconStartShaderLayerRender);
+
+        cursor.Index++;
+
+        cursor.EmitDelegate(EndShaderLayerRender);
+    }
+    
+    private static void IconStartShaderLayerRender(OuiChapterSelectIcon self)
+    {
+        if (!IconTryLoadEffect(self.Area, out ELD data, out Effect effect))
+            return;
+        
+        HiresRenderer.EndRender();
+        
+        Matrix transformMatrix = HiresRenderer.DrawToBuffer ? Matrix.Identity : Engine.ScreenMatrix;
+        effect = ApplyParameters(effect, data, transformMatrix);
+        
+        Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp,
+            DepthStencilState.Default, RasterizerState.CullNone, effect, transformMatrix);
+    }
+    
+    private static bool IconTryLoadEffect(int area, out ELD data, out Effect effect)
+    {
+        data = null;
+        effect = null;
+        
+        AreaData areaData = AreaData.Get(area);
+        if (areaData == null) return false;
+        
+        if (!HamburgerHelperMetadata.TryGetMetadata(areaData, out HamburgerHelperMetadata metadata))
+            return false;
+        
+        HamburgerHelperMetadata.ChapterPanelCustomizationSettingsData oed = metadata?.ChapterPanelCustomization;
+
+        data = oed?.CustomIcon?.IconEffect;
+        
+        effect = data?.Effect;
+        return effect != null;
+    }
+    
+    private static string ModifyPolaroidPath(string orig)
+    {
+        if (SaveData.Instance == null) return orig;
+        AreaData data = AreaData.Get(SaveData.Instance.LastArea_Safe);
+        
+        if (!HamburgerHelperMetadata.TryGetMetadata(data, out HamburgerHelperMetadata metadata)) 
+            return orig;
+        
+        HamburgerHelperMetadata.ChapterPanelCustomizationSettingsData meta = metadata?.ChapterPanelCustomization;
+        return meta == null ? orig : meta.CustomPolaroidPath;
+    }
+    
+    #endregion
     
     # region Overlays & Recolors
     
