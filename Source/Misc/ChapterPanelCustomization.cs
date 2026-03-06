@@ -1,4 +1,7 @@
+#pragma warning disable CA2208
+
 using Celeste.Mod.CollabUtils2;
+using Celeste.Mod.CollabUtils2.UI;
 using Celeste.Mod.Helpers;
 using Microsoft.Xna.Framework.Input;
 using Mono.Cecil;
@@ -21,9 +24,11 @@ namespace Celeste.Mod.HamburgerHelper.Misc;
 // i learned sooooo much while making this and it was really fun!
 public static class ChapterPanelCustomization
 {
-    private static ILHook ilHook_OuiChapterPanel_SwapRoutine;
-    private static ILHook ilHook_OuiChapterPanel_orig_DrawCheckpoint;
-    private static ILHook ilHook_OuiChapterSelectIcon_orig_Update;
+    private static ILHook ilHookOuiChapterPanelSwapRoutine;
+    private static ILHook ilHookOuiChapterPanelOrigDrawCheckpoint;
+    private static ILHook ilHookOuiChapterSelectIconOrigUpdate;
+    
+    private static ILHook ilHookInGameOverworldHelperUpdateIconRoutine;
     
     internal static void Load()
     {
@@ -34,21 +39,36 @@ public static class ChapterPanelCustomization
         IL.Celeste.OuiChapterSelectIcon.SetSelectedPercent += OuiChapterSelectIconOnSetSelectedPercent;
         IL.Celeste.OuiChapterSelectIcon.Render += OuiChapterSelectIconOnRender;
         
-        ilHook_OuiChapterPanel_orig_DrawCheckpoint =
-            new ILHook(typeof(OuiChapterPanel).GetMethod("orig_DrawCheckpoint", BindingFlags.NonPublic | BindingFlags.Instance)!,
+        ilHookOuiChapterPanelOrigDrawCheckpoint =
+            new ILHook(typeof(OuiChapterPanel).GetMethod("orig_DrawCheckpoint", 
+                    BindingFlags.NonPublic | BindingFlags.Instance)!,
             OuiChapterPanel_orig_DrawCheckpoint);
         
-        ilHook_OuiChapterPanel_SwapRoutine =
-            new ILHook(typeof(OuiChapterPanel).GetMethod("SwapRoutine", BindingFlags.NonPublic | BindingFlags.Instance)!.GetStateMachineTarget()!,
+        ilHookOuiChapterPanelSwapRoutine =
+            new ILHook(typeof(OuiChapterPanel).GetMethod("SwapRoutine", 
+                    BindingFlags.NonPublic | BindingFlags.Instance)!.GetStateMachineTarget()!,
                 OuiChapterPanel_SwapRoutine);
 
-        ilHook_OuiChapterSelectIcon_orig_Update =
+        ilHookOuiChapterSelectIconOrigUpdate =
             new ILHook(typeof(OuiChapterSelectIcon).GetMethod("orig_Update")!,
                 OuiChapterSelectIcon_orig_Update);
         
         On.Celeste.MenuOptions.SetWindow += OnWindowSizeChange;
+        
+        if (HamburgerHelperModule.LoadedOptionalDependencies.Contains("CollabUtils2"))
+        {
+            LoadCu2Hook();
+        }
     }
 
+    private static void LoadCu2Hook()
+    {
+        ilHookInGameOverworldHelperUpdateIconRoutine = 
+            new ILHook(typeof(InGameOverworldHelper).GetMethod("UpdateIconRoutine", 
+                    BindingFlags.NonPublic | BindingFlags.Static)!.GetStateMachineTarget()!,
+                InGameOverworldHelper_UpdateIconRoutine);
+    }
+    
     internal static void Unload()
     {
         IL.Celeste.OuiChapterPanel.Render -= OuiChapterPanelOnRender;
@@ -58,22 +78,22 @@ public static class ChapterPanelCustomization
         IL.Celeste.OuiChapterSelectIcon.SetSelectedPercent -= OuiChapterSelectIconOnSetSelectedPercent;
         IL.Celeste.OuiChapterSelectIcon.Render -= OuiChapterSelectIconOnRender;
         
-        ilHook_OuiChapterPanel_SwapRoutine?.Dispose();
-        ilHook_OuiChapterPanel_SwapRoutine = null;
+        ilHookOuiChapterPanelSwapRoutine?.Dispose();
+        ilHookOuiChapterPanelSwapRoutine = null;
         
-        ilHook_OuiChapterPanel_orig_DrawCheckpoint?.Dispose();
-        ilHook_OuiChapterPanel_orig_DrawCheckpoint = null;
+        ilHookOuiChapterPanelOrigDrawCheckpoint?.Dispose();
+        ilHookOuiChapterPanelOrigDrawCheckpoint = null;
         
-        ilHook_OuiChapterSelectIcon_orig_Update?.Dispose();
-        ilHook_OuiChapterSelectIcon_orig_Update = null;
+        ilHookOuiChapterSelectIconOrigUpdate?.Dispose();
+        ilHookOuiChapterSelectIconOrigUpdate = null;
+        
+        ilHookInGameOverworldHelperUpdateIconRoutine?.Dispose();
+        ilHookInGameOverworldHelperUpdateIconRoutine = null;
+        
+        TextMaskTarget?.Dispose();
+        TextMaskTarget = null;
         
         On.Celeste.MenuOptions.SetWindow -= OnWindowSizeChange;
-
-        if (TextMaskTarget != null)
-        {
-            TextMaskTarget?.Dispose();
-            TextMaskTarget = null;
-        }
     }
     
     private static VariableDefinition AddVariable(this MethodBody self, TypeReference type)
@@ -81,55 +101,6 @@ public static class ChapterPanelCustomization
         VariableDefinition variable = new VariableDefinition(type);
         self.Variables.Add(variable);
         return variable;
-    }
-    
-    private static void OuiChapterSelectIconOnSetSelectedPercent(ILContext il)
-    {
-        ILCursor cursor = new ILCursor(il);
-        
-        /*
-         * IL_0017: ldloc.0
-         * IL_0018: callvirt instance valuetype [FNA]Microsoft.Xna.Framework.Vector2 Celeste.OuiChapterPanel::get_IconOffset()
-         * IL_001d: call valuetype [FNA]Microsoft.Xna.Framework.Vector2 [FNA]Microsoft.Xna.Framework.Vector2::op_Addition(valuetype [FNA]Microsoft.Xna.Framework.Vector2, valuetype [FNA]Microsoft.Xna.Framework.Vector2)
-         * IL_0022: stloc.1
-         */
-        if (!cursor.TryGotoNextBestFit(MoveType.After,
-            i => i.MatchLdloc0(),
-            i => i.MatchCallvirt<OuiChapterPanel>("get_IconOffset"),
-            i => i.MatchCall<Vector2>("op_Addition"),
-            i => i.MatchStloc1()))
-            throw new HookException(il, "OuiChapterSelectIcon.SetSelectedPercent failed to match IconOffset");
-        
-        cursor.Index--;
-        
-        cursor.EmitDelegate(ModifyIconOffset);
-    }
-    
-    private static void OuiChapterSelectIcon_orig_Update(ILContext il)
-    {
-        ILCursor cursor = new ILCursor(il);
-        
-        /*
-         * IL_00aa: ldloc.0
-         * IL_00ab: callvirt instance valuetype [FNA]Microsoft.Xna.Framework.Vector2 Celeste.OuiChapterPanel::get_IconOffset()
-         * IL_00b0: call valuetype [FNA]Microsoft.Xna.Framework.Vector2 [FNA]Microsoft.Xna.Framework.Vector2::op_Addition(valuetype [FNA]Microsoft.Xna.Framework.Vector2, valuetype [FNA]Microsoft.Xna.Framework.Vector2)
-         * IL_00b5: stfld valuetype [FNA]Microsoft.Xna.Framework.Vector2 Monocle.Entity::Position
-         */
-        if (!cursor.TryGotoNextBestFit(MoveType.After,
-            i => i.MatchLdloc0(),
-            i => i.MatchCallvirt<OuiChapterPanel>("get_IconOffset"),
-            i => i.MatchCall<Vector2>("op_Addition"),
-            i => i.MatchStfld<Entity>("Position")))
-        {
-            Logger.Log(LogLevel.Info, "DEBUG", "failed");
-            return;
-        }
-        
-            // throw new HookException(il, "OuiChapterSelectIcon.SetSelectedPercent failed to match IconOffset");
-        
-        cursor.Index--;
-        
-        cursor.EmitDelegate(ModifyIconOffset);
     }
     
     private static void OuiChapterPanel_orig_DrawCheckpoint(ILContext il)
@@ -414,6 +385,75 @@ public static class ChapterPanelCustomization
         return orig + meta.CustomIcon.PositionOffset;
     }
     
+    private static void InGameOverworldHelper_UpdateIconRoutine(ILContext il)
+    {
+        ILCursor cursor = new ILCursor(il);
+        
+        /*
+         * IL_004f: callvirt instance valuetype [FNA]Microsoft.Xna.Framework.Vector2 [Celeste]Celeste.OuiChapterPanel::get_IconOffset()
+         * IL_0054: call valuetype [FNA]Microsoft.Xna.Framework.Vector2 [FNA]Microsoft.Xna.Framework.Vector2::op_Addition(valuetype [FNA]Microsoft.Xna.Framework.Vector2, valuetype [FNA]Microsoft.Xna.Framework.Vector2)
+         * IL_0059: stfld valuetype [FNA]Microsoft.Xna.Framework.Vector2 [Celeste]Monocle.Entity::Position
+         */
+        if (!cursor.TryGotoNext(MoveType.After,
+            i => i.MatchCallvirt<OuiChapterPanel>("get_IconOffset"),
+            i => i.MatchCall<Vector2>("op_Addition"),
+            i => i.MatchStfld<Entity>("Position")))
+            throw new HookException(il, "InGameOverworldHelper.UpdateIconRoutine failed to match IconOffset");
+        
+        cursor.Index--;
+        
+        cursor.EmitDelegate(ModifyIconOffset);
+    }
+    
+    private static void OuiChapterSelectIconOnSetSelectedPercent(ILContext il)
+    {
+        ILCursor cursor = new ILCursor(il);
+        
+        /*
+         * IL_0017: ldloc.0
+         * IL_0018: callvirt instance valuetype [FNA]Microsoft.Xna.Framework.Vector2 Celeste.OuiChapterPanel::get_IconOffset()
+         * IL_001d: call valuetype [FNA]Microsoft.Xna.Framework.Vector2 [FNA]Microsoft.Xna.Framework.Vector2::op_Addition(valuetype [FNA]Microsoft.Xna.Framework.Vector2, valuetype [FNA]Microsoft.Xna.Framework.Vector2)
+         * IL_0022: stloc.1
+         */
+        if (!cursor.TryGotoNextBestFit(MoveType.After,
+            i => i.MatchLdloc0(),
+            i => i.MatchCallvirt<OuiChapterPanel>("get_IconOffset"),
+            i => i.MatchCall<Vector2>("op_Addition"),
+            i => i.MatchStloc1()))
+            throw new HookException(il, "OuiChapterSelectIcon.SetSelectedPercent failed to match IconOffset");
+        
+        cursor.Index--;
+        
+        cursor.EmitDelegate(ModifyIconOffset);
+    }
+    
+    private static void OuiChapterSelectIcon_orig_Update(ILContext il)
+    {
+        ILCursor cursor = new ILCursor(il);
+        
+        /*
+         * IL_00aa: ldloc.0
+         * IL_00ab: callvirt instance valuetype [FNA]Microsoft.Xna.Framework.Vector2 Celeste.OuiChapterPanel::get_IconOffset()
+         * IL_00b0: call valuetype [FNA]Microsoft.Xna.Framework.Vector2 [FNA]Microsoft.Xna.Framework.Vector2::op_Addition(valuetype [FNA]Microsoft.Xna.Framework.Vector2, valuetype [FNA]Microsoft.Xna.Framework.Vector2)
+         * IL_00b5: stfld valuetype [FNA]Microsoft.Xna.Framework.Vector2 Monocle.Entity::Position
+         */
+        if (!cursor.TryGotoNextBestFit(MoveType.After,
+            i => i.MatchLdloc0(),
+            i => i.MatchCallvirt<OuiChapterPanel>("get_IconOffset"),
+            i => i.MatchCall<Vector2>("op_Addition"),
+            i => i.MatchStfld<Entity>("Position")))
+        {
+            Logger.Log(LogLevel.Info, "DEBUG", "failed");
+            return;
+        }
+        
+            // throw new HookException(il, "OuiChapterSelectIcon.SetSelectedPercent failed to match IconOffset");
+        
+        cursor.Index--;
+        
+        cursor.EmitDelegate(ModifyIconOffset);
+    }
+    
     private static void OuiChapterSelectIconOnRender(ILContext il)
     {
         ILCursor cursor = new ILCursor(il);
@@ -506,8 +546,8 @@ public static class ChapterPanelCustomization
                     HamburgerHelperMetadata.OverlayData.Conditions.Golden => GoldenCollected(panel.Area, stats),
                     HamburgerHelperMetadata.OverlayData.Conditions.Silver => SilverCollected(panel.Area, stats),
                     HamburgerHelperMetadata.OverlayData.Conditions.Rainbow => RainbowCollected(panel.Area, stats),
-                           _ => throw new ArgumentOutOfRangeException()
-                       })
+                    _ => throw new ArgumentOutOfRangeException()
+                })
                        .Where(overlayData => overlayData.Texture is not null && GFX.Gui.Has(overlayData.Texture)))
         {
             MTexture texture = GFX.Gui[overlayData.Texture];

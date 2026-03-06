@@ -12,8 +12,10 @@ using MonoMod.Utils;
 
 namespace Celeste.Mod.HamburgerHelper;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class HamburgerHelperModule : EverestModule 
 {
+    // ReSharper disable once MemberCanBePrivate.Global
     public static HamburgerHelperModule Instance { get; private set; }
 
     public override Type SettingsType => typeof(HamburgerHelperModuleSettings);
@@ -25,7 +27,7 @@ public class HamburgerHelperModule : EverestModule
     public override Type SaveDataType => typeof(HamburgerHelperModuleSaveData);
     public static HamburgerHelperModuleSaveData SaveData => (HamburgerHelperModuleSaveData) Instance._SaveData;
 
-    public static HashSet<string> LoadedOptionalDependencies = new HashSet<string>();
+    public static readonly HashSet<string> LoadedOptionalDependencies = [];
     
     public HamburgerHelperModule() 
     {
@@ -97,14 +99,17 @@ public class HamburgerHelperModule : EverestModule
         List<EverestModuleMetadata> optionalDependencies = new List<EverestModuleMetadata>();
         LoadedOptionalDependencies.Clear();
         
-        EverestModuleMetadata collabUtils2 = new EverestModuleMetadata() {
+        EverestModuleMetadata collabUtils2 = new EverestModuleMetadata() 
+        {
             Name = "CollabUtils2",
             Version = new Version(1, 12, 2),
         };
         optionalDependencies.Add(collabUtils2);
         
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         foreach (EverestModuleMetadata mod in optionalDependencies)
         {
+            // ReSharper disable once InvertIf
             if (Everest.Loader.DependencyLoaded(mod))
             {
                 Logger.Log(LogLevel.Info, "HamburgerHelper", $"Loaded optional dependency {mod.Name}");
