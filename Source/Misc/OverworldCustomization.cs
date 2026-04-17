@@ -1,4 +1,5 @@
 using System.Collections;
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 using Celeste.Mod.UI;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
@@ -8,6 +9,7 @@ namespace Celeste.Mod.HamburgerHelper.Misc;
 
 public static class OverworldCustomization
 {
+    [OnLoad]
     internal static void Load()
     {
         IL.Celeste.MountainRenderer.Render += MountainRendererOnRender;
@@ -18,6 +20,7 @@ public static class OverworldCustomization
         On.Celeste.OuiChapterSelect.Enter += OuiChapterSelectOnEnter;
     }
 
+    [OnUnload]
     internal static void Unload()
     {
         IL.Celeste.MountainRenderer.Render -= MountainRendererOnRender;

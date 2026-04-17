@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 using SDL2;
 
 namespace Celeste.Mod.HamburgerHelper.Utils;
@@ -111,11 +112,13 @@ public static class WindowUtils
         ResetWindowTitle(fromDisabledSetting: true);
     }
     
+    [OnLoad]
     internal static void Load()
     {
         On.Celeste.Level.End += ResetWindowIconAndTitle;
     }
     
+    [OnUnload]
     internal static void Unload()
     {
         On.Celeste.Level.End -= ResetWindowIconAndTitle;

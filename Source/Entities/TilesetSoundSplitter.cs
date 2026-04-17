@@ -1,3 +1,5 @@
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
+
 namespace Celeste.Mod.HamburgerHelper.Entities;
 
 // ReSharper disable once ClassNeverInstantiated.Global
@@ -79,6 +81,7 @@ public class TilesetSoundSplitter : Entity
         return tile;
     }
     
+    [OnLoad]
     internal static void Load()
     {
         On.Celeste.SolidTiles.GetWallSoundIndex += SolidTilesOnGetWallSoundIndex;
@@ -86,6 +89,7 @@ public class TilesetSoundSplitter : Entity
         On.Celeste.SolidTiles.GetLandSoundIndex += SolidTilesOnGetLandSoundIndex;
     }
 
+    [OnUnload]
     internal static void Unload()
     {
         On.Celeste.SolidTiles.GetWallSoundIndex -= SolidTilesOnGetWallSoundIndex;

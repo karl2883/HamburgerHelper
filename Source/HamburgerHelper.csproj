@@ -32,6 +32,11 @@
         <!-- Add any dependency references here. -->
         <Reference Include="CollabUtils2.CollabUtils2" Private="false" />
     </ItemGroup>
+
+
+    <ItemGroup>
+	<Analyzer Include="lib/ModLifecycleAttributes.dll" />
+    </ItemGroup>
     
     <Target Name="CopyFiles" AfterTargets="Build" Inputs="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).pdb" Outputs="..\bin\$(AssemblyName).dll;..\bin\$(AssemblyName).pdb">
         <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="..\bin" />

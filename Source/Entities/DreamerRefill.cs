@@ -1,4 +1,5 @@
 using System.Collections;
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 
 namespace Celeste.Mod.HamburgerHelper.Entities;
 
@@ -218,6 +219,7 @@ public class DreamerRefill : Entity
         Level = scene as Level;
     }
     
+    [OnLoad]
     internal static void Load()
     {
         On.Celeste.Player.DashEnd += PlayerOnDashEnd;
@@ -228,6 +230,7 @@ public class DreamerRefill : Entity
         On.Celeste.PlayerHair.GetHairColor += PlayerHairOnGetHairColor;
     }
 
+    [OnUnload]
     internal static void Unload()
     {
         On.Celeste.Player.DashEnd -= PlayerOnDashEnd;

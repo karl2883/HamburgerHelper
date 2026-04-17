@@ -1,10 +1,13 @@
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
+
 namespace Celeste.Mod.HamburgerHelper;
 
 public static class HamburgerHelperGFX
 {
     private static Dictionary<string, Effect> Effects = new Dictionary<string, Effect>();
     
-    internal static void LoadContent()
+    [OnLoadContent]
+    internal static void LoadContent(bool firstLoad)
     {
     }
     
@@ -13,11 +16,13 @@ public static class HamburgerHelperGFX
         ClearEffects();
     }
 
+    [OnLoad]
     internal static void Load()
     {
         On.Celeste.Level.Begin += LevelOnBegin;
     }
 
+    [OnUnload]
     internal static void Unload()
     {
         On.Celeste.Level.Begin -= LevelOnBegin;

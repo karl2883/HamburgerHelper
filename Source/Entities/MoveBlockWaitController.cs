@@ -1,3 +1,4 @@
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
@@ -23,6 +24,7 @@ public class MoveBlockWaitController : Entity
         Delay = data.Float("delay", 0f);
     }
     
+    [OnLoad]
     internal static void Load()
     {
         ilMoveBlockController = new ILHook(
@@ -31,6 +33,7 @@ public class MoveBlockWaitController : Entity
             ModController);
     }
     
+    [OnUnload]
     internal static void Unload()
     {
         ilMoveBlockController.Dispose();

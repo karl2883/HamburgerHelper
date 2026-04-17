@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Celeste.Mod.Helpers;
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 using MonoMod.Cil;
 
 namespace Celeste.Mod.HamburgerHelper.Entities;
@@ -96,11 +97,13 @@ public class StickyWalls : Entity
         }
     }
 
+    [OnLoad]
     internal static void Load()
     {
         IL.Celeste.Player.ClimbUpdate += PlayerOnClimbUpdate;
     }
 
+    [OnUnload]
     internal static void Unload()
     {
         IL.Celeste.Player.ClimbUpdate -= PlayerOnClimbUpdate;

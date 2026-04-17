@@ -3,6 +3,7 @@
 using Celeste.Mod.CollabUtils2;
 using Celeste.Mod.CollabUtils2.UI;
 using Celeste.Mod.Helpers;
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 using Microsoft.Xna.Framework.Input;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -30,6 +31,7 @@ public static class ChapterPanelCustomization
     
     private static ILHook ilHookInGameOverworldHelperUpdateIconRoutine;
     
+    [OnLoad]
     internal static void Load()
     {
         IL.Celeste.OuiChapterPanel.Render += OuiChapterPanelOnRender;
@@ -69,6 +71,7 @@ public static class ChapterPanelCustomization
                 InGameOverworldHelper_UpdateIconRoutine);
     }
     
+    [OnUnload]
     internal static void Unload()
     {
         IL.Celeste.OuiChapterPanel.Render -= OuiChapterPanelOnRender;
@@ -936,7 +939,8 @@ public static class ChapterPanelCustomization
         ResizeTarget();
     }
     
-    internal static void LoadContent()
+    [OnLoadContent]
+    internal static void LoadContent(bool firstLoad)
     {
         GetWindowScale(out float scaleX, out float scaleY);
         

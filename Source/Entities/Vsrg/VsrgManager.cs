@@ -1,6 +1,7 @@
 using System.Collections;
 using Celeste.Mod.HamburgerHelper.Entities.Vsrg.HitObjects;
 using Celeste.Mod.Helpers;
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 using MonoMod.Cil;
 
 namespace Celeste.Mod.HamburgerHelper.Entities.Vsrg;
@@ -221,11 +222,13 @@ public class VsrgManager : Entity
         sb.End();
     }
 
+    [OnLoad]
     internal static void Load()
     {
         IL.Celeste.Level.Render += LevelOnRender;
     }
 
+    [OnUnload]
     internal static void Unload()
     {
         IL.Celeste.Level.Render -= LevelOnRender;

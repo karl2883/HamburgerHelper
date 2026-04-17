@@ -2,6 +2,9 @@
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnassignedField.Global
+
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
+
 namespace Celeste.Mod.HamburgerHelper;
 
 public class HamburgerHelperMetadata
@@ -194,11 +197,13 @@ public class HamburgerHelperMetadata
         return true;
     }
     
+    [OnLoad]
     internal static void Load()
     {
         Everest.Content.OnUpdate += ContentOnOnUpdate;
     }
     
+    [OnUnload]
     internal static void Unload()
     {
         Everest.Content.OnUpdate -= ContentOnOnUpdate;

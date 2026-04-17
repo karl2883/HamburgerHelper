@@ -45,53 +45,21 @@ public class HamburgerHelperModule : EverestModule
     {
         LoadOptioanlDependencies();
         
-        States.St.Load();
-        
-        StickyWalls.Load();
-        TilesetSoundSplitter.Load();
-        MoveBlockWaitController.Load();
-        DreamerRefill.Load();
-        
-        VsrgManager.Load();
-        
-        ChapterPanelCustomization.Load();
-        OverworldCustomization.Load();
-        
-        WindowUtils.Load();
-        
-        HamburgerHelperMetadata.Load();
-        HamburgerHelperGFX.Load();
+        LifecycleMethods.OnLoad();
         
         typeof(WindowUtilsExports).ModInterop();
     }
 
     public override void Unload() 
     {
-        States.St.Unload();
-        
-        StickyWalls.Unload();
-        TilesetSoundSplitter.Unload();
-        MoveBlockWaitController.Unload();
-        DreamerRefill.Unload();
-        
-        VsrgManager.Unload();
-        
-        ChapterPanelCustomization.Unload();
-        OverworldCustomization.Unload();
-        
-        WindowUtils.Unload();
-        
-        HamburgerHelperMetadata.Unload();
-        HamburgerHelperGFX.Unload();
+        LifecycleMethods.OnUnload();
         
         HamburgerHelperGFX.UnloadContent();
     }
     
     public override void LoadContent(bool firstLoad)
     {
-        ChapterPanelCustomization.LoadContent();
-        
-        HamburgerHelperGFX.LoadContent();
+        LifecycleMethods.OnLoadContent(firstLoad);
     }
     
     private static void LoadOptioanlDependencies()

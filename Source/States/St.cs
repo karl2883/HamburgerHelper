@@ -1,9 +1,12 @@
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
+
 namespace Celeste.Mod.HamburgerHelper.States;
 
 public static class St
 {
     public static int Cursor { get; private set; } = -1;
     
+    [OnLoad]
     internal static void Load()
     {
         Everest.Events.Player.OnRegisterStates += OnRegisterStates;
@@ -11,6 +14,7 @@ public static class St
         States.Cursor.Load();
     }
 
+    [OnUnload]
     internal static void Unload()
     {
         States.Cursor.Unload();
