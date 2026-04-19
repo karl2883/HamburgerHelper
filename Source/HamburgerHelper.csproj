@@ -17,6 +17,7 @@
     </ItemDefinitionGroup>
 
     <ItemGroup>
+        <PackageReference Include="CelesteMod.Roslyn.ModLifecycleAttributes" Version="1.0.0" PrivateAssets="all" />
         <PackageReference Include="MonoMod.RuntimeDetour" Version="25.3.1" PrivateAssets="all" ExcludeAssets="runtime" />
         <PackageReference Include="MonoMod.Patcher" Version="25.0.0-prerelease.2" />
         <PackageReference Include="CelesteAnalyzer" Version="*" />
@@ -31,11 +32,6 @@
     <ItemGroup>
         <!-- Add any dependency references here. -->
         <Reference Include="CollabUtils2.CollabUtils2" Private="false" />
-    </ItemGroup>
-
-
-    <ItemGroup>
-	<Analyzer Include="lib/ModLifecycleAttributes.dll" />
     </ItemGroup>
     
     <Target Name="CopyFiles" AfterTargets="Build" Inputs="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).pdb" Outputs="..\bin\$(AssemblyName).dll;..\bin\$(AssemblyName).pdb">
