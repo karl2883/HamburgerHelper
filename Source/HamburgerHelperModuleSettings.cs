@@ -39,4 +39,6 @@ public class HamburgerHelperModuleSettings : EverestModuleSettings
     
     [DefaultButtonBinding(Buttons.Y, Keys.OemQuestion)]
     public ButtonBinding VsrgColumn4 { get; set; }
+    
+    public bool ShowCustomDashIndicators { get; set; } = true;
 }
