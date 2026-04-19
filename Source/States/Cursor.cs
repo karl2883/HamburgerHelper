@@ -1,6 +1,7 @@
 using System.Collections;
 using Celeste.Mod.HamburgerHelper.Components;
 using Celeste.Mod.HamburgerHelper.Entities;
+using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 
 namespace Celeste.Mod.HamburgerHelper.States;
 
@@ -81,6 +82,7 @@ public static class Cursor
     
     private static CursorComponent CursorComp;
     
+    [OnLoad]
     internal static void Load()
     {
         On.Celeste.Player.Added += PlayerOnAdded;
@@ -89,6 +91,7 @@ public static class Cursor
         On.Celeste.Player.UpdateSprite += PlayerOnUpdateSprite;
     }
     
+    [OnUnload]
     internal static void Unload()
     {
         On.Celeste.Player.Added -= PlayerOnAdded;
