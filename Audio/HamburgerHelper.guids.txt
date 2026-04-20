@@ -1,8 +1,12 @@
-{727aadf1-ce87-41aa-a5a9-b36b1f981f75} event:/HamburgerHelper/sfx/dreamer_diamond_return
-{1ffd5064-87c3-4a2c-94c0-9ee8cdb138bb} event:/HamburgerHelper/sfx/dreamer_diamond_touch
-{48683e6a-8063-4502-bb94-9bd77f051eef} event:/HamburgerHelper/sfx/mouse_up
-{1b67fdfc-dbf8-4a41-8178-87f25116d535} event:/HamburgerHelper/sfx/lighter_return
+{16a3d5af-1253-4a97-b866-9499122b5f61} event:/HamburgerHelper/sfx/lighter_light
 {11d62d4a-1409-4a6a-886a-073aeb9a7c92} event:/HamburgerHelper/sfx/lighter_touch
-{c746e284-ea9f-4c6e-ab13-ebcbac970592} event:/HamburgerHelper/sfx/angel_wing_flap
+{48683e6a-8063-4502-bb94-9bd77f051eef} event:/HamburgerHelper/sfx/mouse_up
+{4c8744a5-3403-47dd-ba62-4e936a59f885} event:/HamburgerHelper/sfx/firework_explode
+{1b67fdfc-dbf8-4a41-8178-87f25116d535} event:/HamburgerHelper/sfx/lighter_return
+{727aadf1-ce87-41aa-a5a9-b36b1f981f75} event:/HamburgerHelper/sfx/dreamer_diamond_return
+{ba058cf6-9a4f-4f9a-b2cf-c2ad8f14e5a4} event:/HamburgerHelper/sfx/firework_launch
 {9a7ad35b-33a6-4681-a31c-a71fb7308e07} event:/HamburgerHelper/sfx/mouse_down
+{1ffd5064-87c3-4a2c-94c0-9ee8cdb138bb} event:/HamburgerHelper/sfx/dreamer_diamond_touch
+{387da410-b752-4d3c-9e93-fd6cde9f9e7c} event:/HamburgerHelper/sfx/fuse_sparkler
+{c746e284-ea9f-4c6e-ab13-ebcbac970592} event:/HamburgerHelper/sfx/angel_wing_flap
 {bf57bd3c-4d46-4751-9d94-791c3c612c0c} bank:/HamburgerHelper

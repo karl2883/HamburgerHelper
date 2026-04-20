@@ -1,4 +1,5 @@
 using System.Collections;
+using FMOD.Studio;
 
 namespace Celeste.Mod.HamburgerHelper.Entities.Firework;
 
@@ -24,6 +25,8 @@ public class Firework : Entity
     private readonly MTexture IndicatorTexture;
 
     private readonly Vector2 StartPosition;
+
+    private EventInstance LaunchSound;
     
     public Firework(EntityData data, Vector2 offset) 
         : base(data.Position + offset)
@@ -101,6 +104,8 @@ public class Firework : Entity
         
         Player player = level.Tracker.GetEntity<Player>();
         if (player == null) yield break;
+
+        LaunchSound = Audio.Play("event:/HamburgerHelper/sfx/firework_launch", Center);
         
         float dur = 0f;
         while (dur < LaunchTime)
@@ -119,6 +124,12 @@ public class Firework : Entity
             Position += movementOffset;
             
             yield return null;
+        }
+
+        if (Audio.IsPlaying(LaunchSound))
+        {
+            Audio.Stop(LaunchSound);
+            LaunchSound = null;
         }
         
         Explode();
@@ -147,7 +158,8 @@ public class Firework : Entity
         {
             player.ExplodeLaunch(Position, true, false);   
         }
-        
+
+        Audio.Play("event:/HamburgerHelper/sfx/firework_explode", Position);
         RemoveSelf();
     }
     

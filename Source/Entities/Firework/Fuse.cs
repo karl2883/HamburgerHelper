@@ -1,4 +1,5 @@
 using System.Collections;
+using FMOD.Studio;
 
 namespace Celeste.Mod.HamburgerHelper.Entities.Firework;
 
@@ -19,6 +20,8 @@ public class Fuse : Entity
     public Vector2? SparkPosition;
     public bool IsLit = false;
     private bool LitByOther = false;
+
+    private static EventInstance FuseAmbience;
     
     private static bool CanLight
     {
@@ -76,6 +79,9 @@ public class Fuse : Entity
             case false when PlayerIgnite: {
                 if (CollideCheck<Player>() && Input.Grab.Pressed)
                 {
+                    Audio.Play("event:/HamburgerHelper/sfx/lighter_light", Center);
+                    Add(new Coroutine(PlayAudioRoutine()));
+                    
                     Ignite();
                 }
                 break;
@@ -137,13 +143,23 @@ public class Fuse : Entity
         if (!CanLight && !LitByOther) return;
         
         Collider = null;
-        
+
         if (!LitByOther) CanLight = false;
         
         IsLit = true;
         FuseSprite.Color = Color.White;
         
         Add(new Coroutine(FuseRoutine()));
+    }
+
+    private IEnumerator PlayAudioRoutine()
+    {
+        yield return 0.8f;
+
+        if (FuseAmbience == null)
+        {
+            FuseAmbience = Audio.Play("event:/HamburgerHelper/sfx/fuse_sparkler", Center);   
+        }
     }
     
     private IEnumerator FuseRoutine()
@@ -173,6 +189,9 @@ public class Fuse : Entity
             Nodes.RemoveAt(0);
         }
     
+        Audio.Stop(FuseAmbience);
+        FuseAmbience = null;
+        
         SparkPosition = null;
         
         RemoveSelf();
