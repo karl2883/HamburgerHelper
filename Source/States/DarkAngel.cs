@@ -116,9 +116,9 @@ public static class DarkAngel
         }
         
         // ReSharper disable once InvertIf
-        if (Input.Jump.Released)
+        if (Input.Jump.Released || !Input.Jump.Check)
         {
-            player.AngelJump();
+            player.AngelJump();   
         }
         
         return NextState;
