@@ -154,9 +154,11 @@ public class Firework : Entity
         }
         
         float playerDistance = Vector2.Distance(player.Center, Center);
-        if (playerDistance <= 64f)
+        if (playerDistance <= 48f)
         {
-            player.ExplodeLaunch(Position, true, false);   
+            bool snapUp = Direction is Directions.Up or Directions.Down;
+            bool sidesOnly = Direction is Directions.Left or Directions.Right;
+            player.ExplodeLaunch(Position, snapUp, sidesOnly);   
         }
 
         Audio.Play("event:/HamburgerHelper/sfx/firework_explode", Position);

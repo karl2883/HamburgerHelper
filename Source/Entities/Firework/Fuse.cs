@@ -21,6 +21,10 @@ public class Fuse : Entity
     public bool IsLit = false;
     private bool LitByOther = false;
 
+    private const float BufferTime = 4 / 60f;
+    private float BufferTimer;
+    private bool Buffering => BufferTimer > 0f;
+
     private static EventInstance FuseAmbience;
     
     private static bool CanLight
@@ -56,8 +60,8 @@ public class Fuse : Entity
         
         Depth = Depths.FGTerrain - 10;
         
-        const float colliderWidth = 24f;
-        const float colliderHeight = 24f;
+        const float colliderWidth = 32f;
+        const float colliderHeight = 32f;
         
         const float offsetX = -(colliderWidth / 2f);
         const float offsetY = -(colliderHeight / 2f);
@@ -67,17 +71,24 @@ public class Fuse : Entity
     public override void Update()
     {
         base.Update();
-
+        
         if (IsLit) return;
         if (Scene is not Level level) return;
         
         Player player = level.Tracker.GetEntity<Player>();
         if (player == null) return;
 
+        if (BufferTimer > 0f) BufferTimer -= Engine.DeltaTime;
+        
+        if (Input.Grab.Pressed)
+        {
+            BufferTimer = BufferTime;
+        }
+        
         switch (IsLit)
         {
             case false when PlayerIgnite: {
-                if (CollideCheck<Player>() && Input.Grab.Pressed)
+                if (CollideCheck<Player>() && Buffering)
                 {
                     Audio.Play("event:/HamburgerHelper/sfx/lighter_light", Center);
                     Add(new Coroutine(PlayAudioRoutine()));
