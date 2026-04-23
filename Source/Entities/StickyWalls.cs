@@ -1,6 +1,4 @@
-using System.Text.RegularExpressions;
 using Celeste.Mod.Helpers;
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 using MonoMod.Cil;
 
 namespace Celeste.Mod.HamburgerHelper.Entities;

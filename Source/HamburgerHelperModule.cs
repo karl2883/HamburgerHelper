@@ -1,14 +1,5 @@
-﻿using System.Collections;
-using Celeste.Mod.HamburgerHelper.Entities;
-using Celeste.Mod.HamburgerHelper.Entities.Vsrg;
-using Celeste.Mod.HamburgerHelper.Exports;
-using Celeste.Mod.HamburgerHelper.Misc;
-using Celeste.Mod.Helpers;
-using Celeste.Pico8;
-using MonoMod.Cil;
+﻿using Celeste.Mod.HamburgerHelper.Exports;
 using MonoMod.ModInterop;
-using MonoMod.RuntimeDetour;
-using MonoMod.Utils;
 
 namespace Celeste.Mod.HamburgerHelper;
 

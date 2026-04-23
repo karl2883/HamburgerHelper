@@ -1,7 +1,6 @@
 using System.Collections;
 using Celeste.Mod.HamburgerHelper.Entities.Vsrg.HitObjects;
 using Celeste.Mod.Helpers;
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 using MonoMod.Cil;
 
 namespace Celeste.Mod.HamburgerHelper.Entities.Vsrg;

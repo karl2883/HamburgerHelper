@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Numerics;
 using Celeste.Mod.Backdrops;
-using Celeste.Pico8;
-using Microsoft.Xna.Framework.Input;
-using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Celeste.Mod.HamburgerHelper.Backdrops;
 

@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 using SDL2;
 
 namespace Celeste.Mod.HamburgerHelper.Utils;

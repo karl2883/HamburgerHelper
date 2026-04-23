@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace Celeste.Mod.HamburgerHelper.Components;
 
 public class CursorComponent : Sprite

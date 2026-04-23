@@ -3,8 +3,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnassignedField.Global
 
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
-
 namespace Celeste.Mod.HamburgerHelper;
 
 public class HamburgerHelperMetadata

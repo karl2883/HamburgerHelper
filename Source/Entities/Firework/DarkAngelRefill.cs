@@ -1,5 +1,4 @@
 using System.Collections;
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 
 namespace Celeste.Mod.HamburgerHelper.Entities.Firework;
 

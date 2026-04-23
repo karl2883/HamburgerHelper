@@ -1,7 +1,5 @@
 using System.Collections;
 using Celeste.Mod.HamburgerHelper.Components;
-using Celeste.Mod.HamburgerHelper.Entities;
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 
 namespace Celeste.Mod.HamburgerHelper.States;
 

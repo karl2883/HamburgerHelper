@@ -1,5 +1,4 @@
 using System.Collections;
-using AsmResolver.PE.DotNet.ReadyToRun;
 using Celeste.Mod.HamburgerHelper.States;
 
 namespace Celeste.Mod.HamburgerHelper.Entities;

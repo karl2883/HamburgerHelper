@@ -1,6 +1,3 @@
-using Celeste.Mod.HamburgerHelper.States;
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
-
 namespace Celeste.Mod.HamburgerHelper.Entities.Indicators;
 
 public class PlayerOverlay : Entity

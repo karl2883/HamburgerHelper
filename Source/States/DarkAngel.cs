@@ -1,6 +1,5 @@
 using System.Collections;
 using Celeste.Mod.HamburgerHelper.Entities.Indicators;
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 
 namespace Celeste.Mod.HamburgerHelper.States;
 

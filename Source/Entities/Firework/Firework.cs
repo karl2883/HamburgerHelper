@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Numerics;
 using FMOD.Studio;
-using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Celeste.Mod.HamburgerHelper.Entities.Firework;
 

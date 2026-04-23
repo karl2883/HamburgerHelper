@@ -1,4 +1,3 @@
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;

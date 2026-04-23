@@ -3,8 +3,6 @@
 using Celeste.Mod.CollabUtils2;
 using Celeste.Mod.CollabUtils2.UI;
 using Celeste.Mod.Helpers;
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
-using Microsoft.Xna.Framework.Input;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;

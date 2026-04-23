@@ -1,5 +1,3 @@
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
-
 namespace Celeste.Mod.HamburgerHelper.Entities;
 
 // ReSharper disable once ClassNeverInstantiated.Global

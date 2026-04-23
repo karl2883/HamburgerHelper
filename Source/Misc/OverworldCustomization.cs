@@ -1,9 +1,5 @@
 using System.Collections;
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
-using Celeste.Mod.UI;
 using MonoMod.Cil;
-using MonoMod.RuntimeDetour;
-using MonoMod.Utils;
 
 namespace Celeste.Mod.HamburgerHelper.Misc;
 

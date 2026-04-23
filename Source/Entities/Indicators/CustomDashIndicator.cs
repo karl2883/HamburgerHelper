@@ -1,5 +1,3 @@
-using Celeste.Mod.Roslyn.ModLifecycleAttributes;
-
 namespace Celeste.Mod.HamburgerHelper.Entities.Indicators;
 
 public class CustomDashIndicator : Entity
