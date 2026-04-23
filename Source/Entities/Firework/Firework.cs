@@ -1,11 +1,48 @@
 using System.Collections;
+using System.Numerics;
 using FMOD.Studio;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Celeste.Mod.HamburgerHelper.Entities.Firework;
 
 [CustomEntity("HamburgerHelper/Firework")]
 public class Firework : Entity
 {
+    private class FireworkIndicator : Entity
+    {
+        private readonly MTexture IndicatorTexture;
+
+        public FireworkIndicator(Vector2 position) 
+            : base(position)
+        {
+            const string indicatorPath = "objects/hamburger/firework/indicator";
+            IndicatorTexture = GFX.Game[indicatorPath];
+
+            Collider = new Hitbox(1f, 1f);
+        }
+
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+
+            if (CollideCheck<Solid>())
+            {
+                Depth = Depths.FGTerrain - 3000;
+            }
+            else
+            {
+                Depth = Depths.BGDecals - 1;   
+            }
+        }
+
+        public override void Render()
+        {
+            base.Render();
+            
+            IndicatorTexture.DrawCentered(Position, IndicatorColor);
+        }
+    }
+    
     private enum Directions
     {
         Up = 0,
@@ -13,6 +50,14 @@ public class Firework : Entity
         Left = 2,
         Right = 3,
     }
+
+    private static readonly ParticleType TrailParticles = new ParticleType() 
+    {
+        Size = 1f,
+        LifeMin = 0.25f,
+        LifeMax = 0.5f,
+        Color = Calc.HexToColor("#4A4A4A"),
+    };
     
     private bool Launching = false;
     private readonly float LaunchTime;
@@ -22,11 +67,12 @@ public class Firework : Entity
     private readonly Directions Direction;
 
     private readonly MTexture FireworkTexture;
-    private readonly MTexture IndicatorTexture;
 
     private readonly Vector2 StartPosition;
 
     private EventInstance LaunchSound;
+
+    private FireworkIndicator Indicator;
     
     public Firework(EntityData data, Vector2 offset) 
         : base(data.Position + offset)
@@ -41,11 +87,8 @@ public class Firework : Entity
         const string launchPath = "objects/hamburger/firework/";
         string fireworkPath = data.Attr("fireworkSprite", "launchFirework");
         FireworkTexture = GFX.Game[launchPath + fireworkPath];
-        
-        const string indicatorPath = "objects/hamburger/firework/indicator";
-        IndicatorTexture = GFX.Game[indicatorPath];
 
-        Depth = Depths.FGTerrain - 25;
+        Depth = Depths.FGTerrain - 3000;
 
         // this collider is used exclusively to get the center position
         SetColliderForDirection();
@@ -85,12 +128,17 @@ public class Firework : Entity
             _ => 0f
         };
         
-        Vector2 destination = GetIndicatorPosition();
-        IndicatorTexture.DrawCentered(destination, IndicatorColor);
-        
         FireworkTexture.DrawCentered(Position, Color.White, Vector2.One, angle);
     }
 
+    public override void Added(Scene scene)
+    {
+        base.Added(scene);
+        
+        Indicator = new FireworkIndicator(GetIndicatorPosition());
+        scene.Add(Indicator);
+    }
+    
     private void Launch()
     {
         Launching = true;
@@ -101,9 +149,6 @@ public class Firework : Entity
     private IEnumerator LaunchRoutine()
     {
         if (Scene is not Level level) yield break; 
-        
-        Player player = level.Tracker.GetEntity<Player>();
-        if (player == null) yield break;
 
         LaunchSound = Audio.Play("event:/HamburgerHelper/sfx/firework_launch", Center);
         
@@ -122,6 +167,11 @@ public class Firework : Entity
             
             movementOffset *= LaunchSpeed * 60f * Engine.DeltaTime;
             Position += movementOffset;
+
+            if (Scene.OnInterval(0.025f))
+            {
+                level.ParticlesBG.Emit(TrailParticles, 1, Center, Vector2.One * 2f);
+            }
             
             yield return null;
         }
@@ -141,7 +191,45 @@ public class Firework : Entity
         
         Player player = level.Tracker.GetEntity<Player>();
         if (player == null) return;
+
+        Collider = null;
+        Collider = new Circle(48f);
         
+        foreach (Entity entity in Scene.Tracker.GetEntities<TempleCrackedBlock>())
+        {
+            TempleCrackedBlock tcb = (TempleCrackedBlock)entity;
+            if (CollideCheck(tcb))
+            {
+                tcb.Break(Position);
+            }
+        }
+        foreach (Entity entity in Scene.Tracker.GetEntitiesTrackIfNeeded<DashBlock>())
+        {
+            DashBlock db = (DashBlock)entity;
+            if (CollideCheck(db))
+            {
+                db.Break(db.Center, db.Center, true, true);
+            }
+        }
+        foreach (Entity entity in Scene.Tracker.GetEntities<TouchSwitch>())
+        {
+            TouchSwitch ts = (TouchSwitch)entity;
+            if (CollideCheck(ts))
+            {
+                ts.TurnOn();
+            }
+        }
+        foreach (Entity entity in Scene.Tracker.GetEntities<FloatingDebris>())
+        {
+            FloatingDebris fd = (FloatingDebris)entity;
+            if (CollideCheck(fd))
+            {
+                fd.OnExplode(Position);
+            }
+        }
+
+        Collider = null;
+
         // this was ripped from Celeste.Puffer
         level.Shake();
         level.Displacement.AddBurst(Position, 0.4f, 12f, 36f, 0.5f);
@@ -162,6 +250,7 @@ public class Firework : Entity
         }
 
         Audio.Play("event:/HamburgerHelper/sfx/firework_explode", Position);
+        Indicator.RemoveSelf();
         RemoveSelf();
     }
     
