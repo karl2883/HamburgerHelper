@@ -49,16 +49,17 @@ public class Fuse : Entity
         FuseSprite.AddLoop("invis", "invis", 50);
         FuseSprite.AddLoop("lit", "fuseLit", 0.032f);
         
-        Vector2 fuseOrigin = new Vector2(3, 3);
+        Vector2 fuseOrigin = new Vector2(4, 4);
         FuseSprite.Origin = fuseOrigin;
         FuseSprite.Color = FuseTailColor;
         
         string animation = PlayerIgnite ? "idle" : "invis";
         FuseSprite.Play(animation);
+        FuseSprite.Visible = false;
         
         Add(FuseSprite);
         
-        Depth = Depths.FGTerrain - 10;
+        Depth = Depths.FGTerrain - 3000;
         
         const float colliderWidth = 32f;
         const float colliderHeight = 32f;
@@ -88,7 +89,7 @@ public class Fuse : Entity
         switch (IsLit)
         {
             case false when PlayerIgnite: {
-                if (CollideCheck<Player>() && Buffering)
+                if (CollideCheck<Player>() && Buffering && CanLight)
                 {
                     Audio.Play("event:/HamburgerHelper/sfx/lighter_light", Center);
                     Add(new Coroutine(PlayAudioRoutine()));
@@ -127,6 +128,18 @@ public class Fuse : Entity
         {
             Vector2 currentNode = Nodes[i];
             Vector2 nextNode = Nodes[i + 1];
+
+            Vector2[] outlineOffsets = [
+                new Vector2(0, 1),
+                new Vector2(0, -1),
+                new Vector2(1, 0),
+                new Vector2(-1, 0),
+            ];
+
+            foreach (Vector2 offset in outlineOffsets)
+            {
+                Draw.Line(currentNode + offset, nextNode + offset, Color.Black);
+            }
             
             Draw.Line(currentNode, nextNode, FuseColor);
         }
@@ -146,6 +159,9 @@ public class Fuse : Entity
         float offsetX = FuseHead.X - Position.X;
         float offsetY = FuseHead.Y - Position.Y;
         FuseSprite.Position = new Vector2(offsetX, offsetY);
+        
+        // rendering is done here to place it over the fuse line
+        FuseSprite.Render();
     }
 
     private void Ignite()
