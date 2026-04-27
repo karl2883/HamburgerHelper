@@ -124,6 +124,8 @@ public class Fuse : Entity
     {
         base.Render();
         
+        // looping through all of the nodes twice is really inefficient
+        // but it's a necessary evil for the fuse outlines to stay only as outline and not cause rendering bugs
         for (int i = 0; i < Nodes.Count - 1; i++)
         {
             Vector2 currentNode = Nodes[i];
@@ -140,7 +142,13 @@ public class Fuse : Entity
             {
                 Draw.Line(currentNode + offset, nextNode + offset, Color.Black);
             }
-            
+        }
+        
+        for (int i = 0; i < Nodes.Count - 1; i++)
+        {
+            Vector2 currentNode = Nodes[i];
+            Vector2 nextNode = Nodes[i + 1];
+
             Draw.Line(currentNode, nextNode, FuseColor);
         }
 
