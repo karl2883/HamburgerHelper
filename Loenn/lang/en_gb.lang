@@ -9,6 +9,14 @@ entities.HamburgerHelper/MoveBlockWaitController.placements.description.move_blo
 
 entities.HamburgerHelper/MoveBlockWaitController.attributes.description.delay=Delay to wait before move block moves
 
+# -- Editor Indicator
+
+entities.HamburgerHelper/EditorIndicator.placements.name.editor_indicator=Editor Indicator
+entities.HamburgerHelper/EditorIndicator.placements.description.editor_indicator=An editor only visual indicator, for whatever purposes you need.
+
+entities.HamburgerHelper/EditorIndicator.attributes.description.color=Color for the indicator to display with
+entities.HamburgerHelper/EditorIndicator.attributes.description.filled=Whether or not the indicator should include the semi-transparent fill
+
 # -- Tileset Sound Splitter
 
 entities.HamburgerHelper/TilesetSoundSplitter.placements.name.tileset_sound_splitter=Tileset Sound Splitter
