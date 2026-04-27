@@ -31,6 +31,7 @@ public class Fireworks : Backdrop
             if (Particles[i].Fade <= 0) continue;
 
             Particles[i].Speed += Particles[i].Velocity;
+            
             Particles[i].Position += Particles[i].Speed;
             Particles[i].Life += Engine.DeltaTime;
 
@@ -89,7 +90,7 @@ public class Fireworks : Backdrop
             {
                 float angle = (MathHelper.TwoPi * i / ringSize) + angleOffset;
                 Vector2 speed = Calc.AngleToVector(angle, particleSpeed);
-                Vector2 velocity = speed * 0.125f;
+                Vector2 velocity = speed * 0.125f + (Vector2.UnitY * 0.0625f);
 
                 CreateParticle(fireworkPos, speed, velocity, color);
             }
