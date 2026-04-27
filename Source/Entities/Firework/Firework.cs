@@ -63,13 +63,13 @@ public class Firework : Entity
     private static Color IndicatorColor => Calc.HexToColor("5d5d5d");
 
     private readonly Directions Direction;
-
     private readonly MTexture FireworkTexture;
-
     private readonly Vector2 StartPosition;
 
-    private EventInstance LaunchSound;
+    private readonly bool SidesOnly;
+    private readonly bool SnapUp;
 
+    private EventInstance LaunchSound;
     private FireworkIndicator Indicator;
     
     public Firework(EntityData data, Vector2 offset) 
@@ -81,6 +81,9 @@ public class Firework : Entity
         
         LaunchTime = data.Float("launchTime", 0.5f);
         LaunchSpeed = data.Float("launchSpeed", 2f);
+
+        SidesOnly = data.Bool("sidesOnly", false);
+        SnapUp = data.Bool("snapUp", false);
         
         const string launchPath = "objects/hamburger/firework/";
         string fireworkPath = data.Attr("fireworkSprite", "launchFirework");
@@ -242,9 +245,7 @@ public class Firework : Entity
         float playerDistance = Vector2.Distance(player.Center, Center);
         if (playerDistance <= 48f)
         {
-            bool snapUp = Direction is Directions.Up or Directions.Down;
-            bool sidesOnly = Direction is Directions.Left or Directions.Right;
-            player.ExplodeLaunch(Position, snapUp, sidesOnly);   
+            player.ExplodeLaunch(Position, SnapUp, SidesOnly);   
         }
 
         Audio.Play("event:/HamburgerHelper/sfx/firework_explode", Position);
