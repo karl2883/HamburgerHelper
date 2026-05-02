@@ -9,6 +9,7 @@ public class Firework : Entity
     private class FireworkIndicator : Entity
     {
         private readonly MTexture IndicatorTexture;
+        private static Color IndicatorColor => Calc.HexToColor("cccccc");
 
         public FireworkIndicator(Vector2 position) 
             : base(position)
@@ -60,7 +61,6 @@ public class Firework : Entity
     private bool Launching = false;
     private readonly float LaunchTime;
     private readonly float LaunchSpeed;
-    private static Color IndicatorColor => Calc.HexToColor("5d5d5d");
 
     private readonly Directions Direction;
     private readonly MTexture FireworkTexture;
