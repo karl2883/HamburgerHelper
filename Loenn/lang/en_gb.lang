@@ -91,5 +91,14 @@ triggers.HamburgerHelper/ChangeWindowIconTrigger.attributes.description.iconPath
 triggers.HamburgerHelper/ChangeWindowIconTrigger.attributes.description.flagName=If useFlag is enabled, will check if this specified flag is enabled before activating
 triggers.HamburgerHelper/ChangeWindowIconTrigger.attributes.description.useFlag=Whether or not to check for a flag being enabled before activating
 
+# --- Change Player State Trigger
+
+triggers.HamburgerHelper/ChangeStateTrigger.placements.name.change_state_trigger=Change Player State Trigger
+triggers.HamburgerHelper/ChangeStateTrigger.placements.description.change_state_trigger=Sets the player state to a specified one
+
+triggers.HamburgerHelper/ChangeStateTrigger.attributes.description.state=State for the player to be changed to
+triggers.HamburgerHelper/ChangeStateTrigger.attributes.description.onlyOnce=Whether or not it should remove itself permanently after use. 
+triggers.HamburgerHelper/ChangeStateTrigger.attributes.description.triggerOnlyOnce=Whether or not it should remove itself after entry, once
+
 # ----- Effects ------
 
