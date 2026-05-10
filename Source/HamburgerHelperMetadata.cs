@@ -227,5 +227,6 @@ public class HamburgerHelperMetadata
     private static void ClearMetadataCache()
     {
         CachedMetadata.Clear();
+        NegativeCache.Clear();
     }
 }
