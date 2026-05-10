@@ -7,7 +7,8 @@ namespace Celeste.Mod.HamburgerHelper;
 
 public class HamburgerHelperMetadata
 {
-    private static readonly Dictionary<string, HamburgerHelperMetadata> CachedMetadata = new Dictionary<string, HamburgerHelperMetadata>();
+    private static readonly Dictionary<string, HamburgerHelperMetadata> CachedMetadata = [];
+    private static readonly HashSet<string> NegativeCache = [];
     
     private class HamburgerHelperYaml
     {
@@ -179,17 +180,27 @@ public class HamburgerHelperMetadata
         }
         
         if (CachedMetadata.TryGetValue(area.SID, out metadata)) return true;
+        if (NegativeCache.Contains(area.SID)) return false;
         
         string metaFile = $"Maps/{area.SID}.meta";
         if (!Everest.Content.TryGet(metaFile, out ModAsset asset))
+        {
+            NegativeCache.Add(area.SID);
             return false;
-        
-        if (asset is null) return false;
-        if (!asset.PathVirtual.StartsWith("Maps")) return false;
-        if (!asset.TryDeserialize(out HamburgerHelperYaml meta)) return false;
+        }
+
+        if (asset is null || !asset.PathVirtual.StartsWith("Maps") || !asset.TryDeserialize(out HamburgerHelperYaml meta))
+        {
+            NegativeCache.Add(area.SID);
+            return false;
+        }
         
         metadata = meta?.HamburgerHelperMetadata;
-        if (metadata?.ChapterPanelCustomization == null) return false;
+        if (metadata?.ChapterPanelCustomization == null)
+        {
+            NegativeCache.Add(area.SID);
+            return false;
+        }
         
         CachedMetadata[area.SID] = metadata;
         return true;
